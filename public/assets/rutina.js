@@ -1,4 +1,4 @@
-// public/assets/rutina.js
+// public/assets/rutina.js 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const supabaseUrl = 'https://zeihyrwfxmrlogrgvtif.supabase.co';

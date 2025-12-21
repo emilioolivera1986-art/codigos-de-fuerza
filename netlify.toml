@@ -3,4 +3,4 @@
 
 [build.environment]
   # desactivamos el escaneo de SUPABASE_URL (es pública)
-  SECRETS_SCAN_OMIT_KEYS = "SUPABASE_URL" 
+  SECRETS_SCAN_OMIT_KEYS = "SUPABASE_URL"
