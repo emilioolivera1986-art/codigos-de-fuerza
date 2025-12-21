@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - Códigos de Fuerza</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --fondo: #0f172a;
+      --amarillo: rgba(255, 191, 0, .35);
+      --amarillo-solido: #ffbf00;
+      --blanco: #ffffff;
+      --gris-claro: rgba(255, 255, 255, .85);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Bebas Neue", sans-serif;
+      background: var(--fondo);
+      color: var(--blanco);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .logo {
+      width: 100px;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+    }
+
+    .badge {
+      display: inline-block;
+      margin: 0.5rem 0;
+      padding: 0.3rem 0.8rem;
+      background: var(--amarillo);
+      color: var(--fondo);
+      border-radius: 20px;
+      font-size: 1rem;
+    }
+
+    .btn {
+      margin-top: 2rem;
+      padding: .75rem 2rem;
+      font-size: 1.2rem;
+      font-family: "Bebas Neue", sans-serif;
+      letter-spacing: 1px;
+      background: var(--amarillo-solido);
+      color: var(--fondo);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background .2s;
+    }
+
+    .btn:hover {
+      background: #ffd93d;
+    }
+
+    #salir {
+      margin-top: 1rem;
+      background: transparent;
+      color: var(--amarillo-solido);
+      border: 1px solid var(--amarillo-solido);
+    }
+
+    #salir:hover {
+      background: var(--amarillo-solido);
+      color: var(--fondo);
+    }
+
+    #solapa-rutina {
+      margin-top: 2rem;
+      text-align: left;
+      max-width: 600px;
+    }
+
+    #rutina-contenido {
+      white-space: pre-wrap;
+      background: rgba(0,0,0,.5);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <img src="/assets/logo-cf.jpg" alt="Logo CF" class="logo" />
+  <h1 id="welcome">¡Bienvenido a tus códigos de fuerza!</h1>
+
+  <p id="user-email"></p>
+  <p id="dias-registro" class="badge"></p>
+  <p id="verif-status"></p>
+
+  <a href="#" class="btn" id="btn-rutina">Empezar rutina</a>
+  <button id="btn-ver-rutina" class="btn">Ver mi rutina</button>
+
+  <section id="solapa-rutina" style="display:none;">
+    <h2>Mi rutina personalizada</h2>
+    <div id="rutina-contenido">Cargando rutina...</div>
+    <button id="btn-guardar-rutina" class="btn">Guardar rutina</button>
+  </section>
+
+  <button id="salir">Cerrar sesión</button>
+
+  <script type="module" src="/assets/dashboard.js"></script>
+</body>
+</html>

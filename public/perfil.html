@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mis datos - Códigos de Fuerza</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --fondo: #0f172a;
+      --amarillo: rgba(255, 191, 0, .35);
+      --amarillo-solido: #ffbf00;
+      --blanco: #ffffff;
+      --gris-claro: rgba(255, 255, 255, .85);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body, html {
+      height: 100%;
+      font-family: "Bebas Neue", sans-serif;
+      background: var(--fondo);
+      color: var(--blanco);
+    }
+
+    .contenedor {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .tarjeta {
+      background: rgba(0, 0, 0, .55);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--amarillo);
+      border-radius: 12px;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .logo {
+      width: 90px;
+      display: block;
+      margin: 0 auto 1rem;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      letter-spacing: 1px;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-bottom: .25rem;
+      font-size: 1rem;
+      letter-spacing: .5px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: .6rem .8rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--amarillo);
+      border-radius: 6px;
+      background: var(--gris-claro);
+      color: var(--fondo);
+      font-size: 1rem;
+      font-family: sans-serif;
+    }
+
+    button {
+      width: 100%;
+      padding: .75rem;
+      font-size: 1.2rem;
+      font-family: "Bebas Neue", sans-serif;
+      letter-spacing: 1px;
+      background: var(--amarillo-solido);
+      color: var(--fondo);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+
+    button:hover { background: #ffd93d; }
+
+    #mensaje {
+      margin-top: 1rem;
+      font-size: 1rem;
+      color: var(--amarillo-solido);
+      min-height: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <div class="tarjeta">
+      <img src="/assets/logo-cf.jpg" alt="Logo CF" class="logo" />
+      <h1>Mis datos</h1>
+
+      <form id="form-perfil">
+        <!-- 1) Nombre -->
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" placeholder="Ej. Juan" required />
+
+        <!-- 2) Edad -->
+        <label for="edad">Edad</label>
+        <input type="number" id="edad" min="10" max="99" placeholder="Ej. 28" required />
+
+        <!-- 3) Altura -->
+        <label for="altura">Altura (cm)</label>
+        <input type="number" id="altura" min="120" max="230" placeholder="Ej. 175" required />
+
+        <!-- 4) Peso -->
+        <label for="peso">Peso (kg)</label>
+        <input type="number" id="peso" min="30" max="250" step="0.1" placeholder="Ej. 78.5" required />
+
+        <!-- 5) Objetivo -->
+        <label for="objetivo">Objetivo principal</label>
+        <select id="objetivo" required>
+          <option value="">Elegí uno</option>
+          <option value="bajar_peso">Bajar de peso</option>
+          <option value="ganar_masa">Ganar masa muscular</option>
+          <option value="fuerza">Fuerza</option>
+          <option value="resistencia">Mejorar resistencia</option>
+          <option value="salud">Salud general</option>
+        </select>
+
+        <!-- 6) Nivel -->
+        <label for="nivel">Nivel actual</label>
+        <select id="nivel" required>
+          <option value="">Elegí uno</option>
+          <option value="principiante">Principiante</option>
+          <option value="intermedio">Intermedio</option>
+          <option value="avanzado">Avanzado</option>
+        </select>
+
+        <!-- 7) Días -->
+        <label for="dias">¿Cuántos días por semana podés entrenar?</label>
+        <select id="dias" required>
+          <option value="">Elegí</option>
+          <option value="2">2 días</option>
+          <option value="3">3 días</option>
+          <option value="4">4 días</option>
+          <option value="5">5 días</option>
+          <option value="6">6 días</option>
+        </select>
+
+        <!-- 8) Equipo -->
+        <label for="equipo">Equipo disponible</label>
+        <select id="equipo" required>
+          <option value="">Elegí</option>
+          <option value="nada">Nada (solo peso corporal)</option>
+          <option value="mancuernas_bandas">Mancuernas, bandas y accesorios</option>
+          <option value="gym_completo">Gimnasio completo</option>
+        </select>
+
+        <!-- 9) Tiempo -->
+        <label for="tiempo">Tiempo por sesión</label>
+        <select id="tiempo" required>
+          <option value="">Elegí</option>
+          <option value="45">45 min</option>
+          <option value="60">60 min</option>
+          <option value="90">+90 min</option>
+        </select>
+
+        <button type="submit">Guardar y continuar</button>
+      </form>
+
+      <p id="mensaje"></p>
+    </div>
+  </div>
+
+  <script type="module" src="/assets/perfil.js"></script>
+</body>
+</html>
