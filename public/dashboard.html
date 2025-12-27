@@ -98,28 +98,18 @@
       margin-top: .5rem;
       color: var(--gris-claro);
     }
-    .dias-scroll {
-      display: flex;
-      gap: 1rem;
-      overflow-x: auto;
-      padding-bottom: .5rem;
+    #solapa-rutina {
+      margin-top: 2rem;
+      text-align: left;
+      max-width: 600px;
     }
-    .dia-card {
-      flex: 0 0 200px;
-      background: rgba(255, 255, 255, .08);
-      border: 1px solid var(--amarillo);
-      border-radius: 8px;
+    #rutina-contenido {
+      white-space: pre-wrap;
+      background: rgba(0,0,0,.5);
       padding: 1rem;
-      text-align: center;
+      border-radius: 8px;
+      margin-top: 1rem;
     }
-    .dia-card.done { border-color: #22c55e; }
-    .dia-card.today {
-      border-color: var(--amarillo-solido);
-      box-shadow: 0 0 10px var(--amarillo-solido);
-    }
-    .dia-title { font-size: 1.1rem; margin-bottom: .5rem; }
-    .dia-fecha { display: none; }   /* <- SIN FECHA */
-    .check { font-size: 1.5rem; margin: .5rem 0; }
   </style>
 </head>
 <body>
@@ -136,7 +126,7 @@
       <p id="user-email"></p>
       <p id="dias-registro" class="badge"></p>
       <p id="verif-status"></p>
-      <button id="btn-rutina" class="btn btn-block">Entrenar hoy</button>
+      <button id="btn-rutina" class="btn btn-block">Crear mi rutina</button>
       <button id="btn-ver-rutina" class="btn btn-block" style="display:none;">Ver rutina completa</button>
     </div>
 
@@ -147,11 +137,14 @@
       <div class="imc-label" id="imc-etiqueta"></div>
     </div>
 
-    <!-- Mi semana -->
+    <!-- Mi rutina (solapa vieja, sin tocar) -->
     <div class="card" style="grid-column: 1 / -1;">
-      <h2>Mi semana</h2>
-      <div id="semana-vacia" style="color:var(--gris-claro);">Aún no tenés días cargados.</div>
-      <div class="dias-scroll" id="dias-container"></div>
+      <h2>Mi rutina personalizada</h2>
+      <button id="btn-ver-rutina2" class="btn btn-block">Ver rutina</button>
+      <section id="solapa-rutina" style="display:none;">
+        <div id="rutina-contenido">Cargando rutina...</div>
+        <button id="btn-guardar-rutina" class="btn">Guardar rutina</button>
+      </section>
     </div>
   </div>
 
