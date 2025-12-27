@@ -1,82 +1,5 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-const supabaseUrl = 'https://zeihyrwfxmrlogrgvtif.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InplaWh5cndmeG1ybG9ncmd2dGlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNzQzMTcsImV4cCI6MjA3OTc1MDMxN30.V46Oj1Pqwa0FqsIU3utbX2TPqlhKXIxKaFdnI7cUWss'
-const supabase = createClient(supabaseUrl, supabaseKey)
-
-// ---------- ELEMENTOS ----------
-const welcomeEl   = document.getElementById('welcome')
-const emailEl     = document.getElementById('user-email')
-const diasEl      = document.getElementById('dias-registro')
-const verifEl     = document.getElementById('verif-status')
-const btnRutina   = document.getElementById('btn-rutina')
-const btnVerRut   = document.getElementById('btn-ver-rutina')
-const imcValorEl  = document.getElementById('imc-valor')
-const imcLabelEl  = document.getElementById('imc-etiqueta')
-const diasContainerEl = document.getElementById('dias-container')
-const semanaVaciaEl   = document.getElementById('semana-vacia')
-
-// ---------- CERRAR SESIÓN ----------
-document.getElementById('salir').addEventListener('click', async () => {
-  await supabase.auth.signOut()
-  window.location.replace('/login.html')
-})
-
-// ---------- MAIN ----------
-;(async function init () {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) { window.location.replace('/login.html'); return }
-
-  // bienvenida
-  const { data: perfil } = await supabase.from('perfiles').select('*').eq('id', user.id).single()
-  const nombre = perfil?.nombre || user.email.split('@')[0]
-  welcomeEl.textContent = `¡Hola, ${nombre}! 💪`
-  emailEl.textContent   = user.email
-
-  // días desde registro
-  const created = new Date(user.created_at)
-  const dias  = Math.floor((Date.now() - created) / 86400000)
-  diasEl.textContent = `Día ${dias + 1} con nosotros`
-
-  // verificación
-  verifEl.innerHTML = user.email_confirmed_at
-    ? '✅ Email verificado'
-    : '⚠️ Verificá tu email para acceso completo'
-
-  // IMC
-  if (perfil?.imc) {
-    const v = parseFloat(perfil.imc)
-    imcValorEl.textContent = v.toFixed(1)
-    let label = ''
-    if (v < 18.5)      label = 'Bajo peso'
-    else if (v < 25)   label = 'Normal'
-    else if (v < 30)   label = 'Sobrepeso'
-    else               label = 'Obesidad'
-    imcLabelEl.textContent = label
-  }
-
-  // semana y días
-  await cargarSemana(user.id)
-
-  // botones rutina
-  const { data: rutina } = await supabase.from('rutinas').select('contenido').eq('id', user.id).single()
-  if (rutina) {
-    btnRutina.textContent = 'Entrenar hoy'
-    btnVerRut.style.display = 'inline-block'
-  } else {
-    btnRutina.textContent = 'Crear mi rutina'
-    btnVerRut.style.display = 'none'
-  }
-
-  btnRutina.addEventListener('click', () => {
-    rutina ? window.location.href = '/rutina.html' : window.location.href = '/perfil.html'
-  })
-  btnVerRut.addEventListener('click', () => window.location.href = '/rutina.html')
-})()
-
-// ---------- CARGAR SEMANA ----------
+/* ----------  A) NUEVA FUNCIÓN: cargarSemana  ---------- */
 async function cargarSemana (userId) {
-  // semana actual
   const hoy   = new Date()
   const week  = getWeek(hoy)
   const year  = hoy.getFullYear()
@@ -102,31 +25,69 @@ async function cargarSemana (userId) {
   semanaVaciaEl.style.display = 'none'
   diasContainerEl.innerHTML = ''
 
+  // detectar día que toca hoy
+  const hoyStr = hoy.toISOString().slice(0, 10)
+
   for (const d of dias) {
     const card = document.createElement('div')
     card.className = 'dia-card'
-    const esFuturo = new Date(d.fecha) > new Date()
+    const esFuturo = d.fecha > hoyStr
     const hecho    = d.completado
+    const esHoy    = d.fecha === hoyStr && !hecho
 
     if (hecho) card.classList.add('done')
-    if (esFuturo && !hecho) card.classList.add('future')
+    if (esHoy) card.classList.add('today')
 
     card.innerHTML = `
       <div class="dia-title">${d.dia_txt.split(' - ')[0]}</div>
-      <div class="dia-fecha">${new Date(d.fecha).toLocaleDateString('es-AR')}</div>
       <div class="check">${hecho ? '✅' : esFuturo ? '🔒' : '⏳'}</div>
-      ${!hecho && !esFuturo ? `<button class="btn btn-block" onclick="entrenar('${d.id}')">Entrenar</button>` : ''}
+      ${esHoy ? `<button class="btn btn-block" onclick="entrenar('${d.id}')">Entrenar</button>` : ''}
     `
     diasContainerEl.appendChild(card)
   }
 }
 
-// ---------- ENTRENAR ----------
+/* ----------  B) NUEVA FUNCIÓN: entrenar  ---------- */
 async function entrenar (diaId) {
   window.location.href = '/rutina.html?dia=' + diaId
 }
 
-// ---------- HELPERS ----------
+/* ----------  C) BOTONES: distintos destinos  ---------- */
+btnRutina.addEventListener('click', async () => {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return
+
+  // ¿qué día toca hoy?
+  const hoy   = new Date()
+  const week  = getWeek(hoy)
+  const year  = hoy.getFullYear()
+
+  const { data: sem } = await supabase
+    .from('semanas')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('semana', week)
+    .eq('año', year)
+    .single()
+
+  if (!sem) { window.location.href = '/perfil.html'; return }
+
+  const hoyStr = hoy.toISOString().slice(0, 10)
+  const { data: dia } = await supabase
+    .from('dias_semana')
+    .select('id')
+    .eq('semana_id', sem.id)
+    .eq('fecha', hoyStr)
+    .single()
+
+  if (dia && !dia.completado) {
+    window.location.href = '/rutina.html?dia=' + dia.id   // <-- solo el día de hoy
+  } else {
+    window.location.href = '/rutina.html'                 // <-- rutina completa
+  }
+})
+
+btnVerRutina.addEventListener('click', () => window.location.href = '/rutina.html')
 function getWeek (date) {
   const target = new Date(date.valueOf())
   const dayNr  = (date.getDay() + 6) % 7

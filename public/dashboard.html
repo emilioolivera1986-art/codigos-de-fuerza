@@ -25,14 +25,20 @@
     }
     .top-bar {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 1rem;
       margin-bottom: 2rem;
     }
     .logo {
       width: 70px;
     }
+    .site-title {
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+      color: var(--amarillo-solido);
+    }
     .top-bar button {
+      margin-left: auto;
       background: transparent;
       color: var(--amarillo-solido);
       border: 1px solid var(--amarillo-solido);
@@ -107,15 +113,19 @@
       text-align: center;
     }
     .dia-card.done { border-color: #22c55e; }
-    .dia-card.future { opacity: .5; }
+    .dia-card.today {
+      border-color: var(--amarillo-solido);
+      box-shadow: 0 0 10px var(--amarillo-solido);
+    }
     .dia-title { font-size: 1.1rem; margin-bottom: .5rem; }
-    .dia-fecha { font-size: .8rem; color: var(--gris-claro); }
+    .dia-fecha { display: none; }   /* <- SIN FECHA */
     .check { font-size: 1.5rem; margin: .5rem 0; }
   </style>
 </head>
 <body>
   <div class="top-bar">
     <img src="/assets/logo-cf.jpg" alt="Logo" class="logo">
+    <div class="site-title">Códigos de Fuerza</div>
     <button id="salir">Cerrar sesión</button>
   </div>
 
@@ -126,7 +136,7 @@
       <p id="user-email"></p>
       <p id="dias-registro" class="badge"></p>
       <p id="verif-status"></p>
-      <button id="btn-rutina" class="btn btn-block">Crear mi rutina</button>
+      <button id="btn-rutina" class="btn btn-block">Entrenar hoy</button>
       <button id="btn-ver-rutina" class="btn btn-block" style="display:none;">Ver rutina completa</button>
     </div>
 
