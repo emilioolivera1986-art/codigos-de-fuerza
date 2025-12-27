@@ -1,114 +1,140 @@
-// public/assets/dashboard.js
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const supabaseUrl = 'https://zeihyrwfxmrlogrgvtif.supabase.co'
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InplaWh5cndmeG1ybG9ncmd2dGlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNzQzMTcsImV4cCI6MjA3OTc1MDMxN30.V46Oj1Pqwa0FqsIU3utbX2TPqlhKXIxKaFdnI7cUWss'
 const supabase = createClient(supabaseUrl, supabaseKey)
 
-// ELEMENTOS
-const welcomeEl = document.getElementById('welcome')
-const emailEl = document.getElementById('user-email')
-const diasEl = document.getElementById('dias-registro')
-const verifEl = document.getElementById('verif-status')
-const btnRutina = document.getElementById('btn-rutina')
-const btnVerRutina = document.getElementById('btn-ver-rutina')
+// ---------- ELEMENTOS ----------
+const welcomeEl   = document.getElementById('welcome')
+const emailEl     = document.getElementById('user-email')
+const diasEl      = document.getElementById('dias-registro')
+const verifEl     = document.getElementById('verif-status')
+const btnRutina   = document.getElementById('btn-rutina')
+const btnVerRut   = document.getElementById('btn-ver-rutina')
+const imcValorEl  = document.getElementById('imc-valor')
+const imcLabelEl  = document.getElementById('imc-etiqueta')
+const diasContainerEl = document.getElementById('dias-container')
+const semanaVaciaEl   = document.getElementById('semana-vacia')
 
-// CERRAR SESIÓN
+// ---------- CERRAR SESIÓN ----------
 document.getElementById('salir').addEventListener('click', async () => {
   await supabase.auth.signOut()
   window.location.replace('/login.html')
 })
 
-// HASH #rutina
-if (location.hash === '#rutina') mostrarRutina()
-
-// MAIN
-;(async function init() {
+// ---------- MAIN ----------
+;(async function init () {
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) {
-    window.location.replace('/login.html')
-    return
-  }
+  if (!user) { window.location.replace('/login.html'); return }
 
-  // Nombre y email
-  const { data: perfil } = await supabase.from('perfiles').select('nombre').eq('id', user.id).single()
+  // bienvenida
+  const { data: perfil } = await supabase.from('perfiles').select('*').eq('id', user.id).single()
   const nombre = perfil?.nombre || user.email.split('@')[0]
   welcomeEl.textContent = `¡Hola, ${nombre}! 💪`
-  emailEl.textContent = user.email
+  emailEl.textContent   = user.email
 
-  // Días desde registro
+  // días desde registro
   const created = new Date(user.created_at)
-  const dias = Math.floor((Date.now() - created) / 86400000)
+  const dias  = Math.floor((Date.now() - created) / 86400000)
   diasEl.textContent = `Día ${dias + 1} con nosotros`
 
-  // Verificación
+  // verificación
   verifEl.innerHTML = user.email_confirmed_at
     ? '✅ Email verificado'
     : '⚠️ Verificá tu email para acceso completo'
 
-  // ¿Tiene rutina?
+  // IMC
+  if (perfil?.imc) {
+    const v = parseFloat(perfil.imc)
+    imcValorEl.textContent = v.toFixed(1)
+    let label = ''
+    if (v < 18.5)      label = 'Bajo peso'
+    else if (v < 25)   label = 'Normal'
+    else if (v < 30)   label = 'Sobrepeso'
+    else               label = 'Obesidad'
+    imcLabelEl.textContent = label
+  }
+
+  // semana y días
+  await cargarSemana(user.id)
+
+  // botones rutina
   const { data: rutina } = await supabase.from('rutinas').select('contenido').eq('id', user.id).single()
   if (rutina) {
     btnRutina.textContent = 'Entrenar hoy'
-    btnVerRutina.style.display = 'inline-block'
+    btnVerRut.style.display = 'inline-block'
   } else {
     btnRutina.textContent = 'Crear mi rutina'
-    btnVerRutina.style.display = 'none'
+    btnVerRut.style.display = 'none'
   }
 
-  btnRutina.addEventListener('click', async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-
-    const { data: rutina } = await supabase.from('rutinas').select('contenido').eq('id', user.id).single()
-    if (rutina) {
-      window.location.href = '/rutina.html'
-    } else {
-      window.location.href = '/perfil.html'
-    }
+  btnRutina.addEventListener('click', () => {
+    rutina ? window.location.href = '/rutina.html' : window.location.href = '/perfil.html'
   })
-
-  btnVerRutina?.addEventListener('click', mostrarRutina)
+  btnVerRut.addEventListener('click', () => window.location.href = '/rutina.html')
 })()
 
-// MOSTRAR RUTINA
-async function mostrarRutina() {
-  document.getElementById('solapa-rutina').style.display = 'block'
-  const cont = document.getElementById('rutina-contenido')
-  cont.textContent = 'Generando rutina...'
+// ---------- CARGAR SEMANA ----------
+async function cargarSemana (userId) {
+  // semana actual
+  const hoy   = new Date()
+  const week  = getWeek(hoy)
+  const year  = hoy.getFullYear()
 
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return
+  const { data: sem } = await supabase
+    .from('semanas')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('semana', week)
+    .eq('año', year)
+    .single()
 
-  const { data: perfil } = await supabase.from('perfiles').select('*').eq('id', user.id).single()
-  if (!perfil) {
-    cont.textContent = 'Completá tus datos primero.'
-    return
+  if (!sem) { semanaVaciaEl.style.display = 'block'; return }
+
+  const { data: dias } = await supabase
+    .from('dias_semana')
+    .select('*')
+    .eq('semana_id', sem.id)
+    .order('fecha', { ascending: true })
+
+  if (!dias || !dias.length) { semanaVaciaEl.style.display = 'block'; return }
+
+  semanaVaciaEl.style.display = 'none'
+  diasContainerEl.innerHTML = ''
+
+  for (const d of dias) {
+    const card = document.createElement('div')
+    card.className = 'dia-card'
+    const esFuturo = new Date(d.fecha) > new Date()
+    const hecho    = d.completado
+
+    if (hecho) card.classList.add('done')
+    if (esFuturo && !hecho) card.classList.add('future')
+
+    card.innerHTML = `
+      <div class="dia-title">${d.dia_txt.split(' - ')[0]}</div>
+      <div class="dia-fecha">${new Date(d.fecha).toLocaleDateString('es-AR')}</div>
+      <div class="check">${hecho ? '✅' : esFuturo ? '🔒' : '⏳'}</div>
+      ${!hecho && !esFuturo ? `<button class="btn btn-block" onclick="entrenar('${d.id}')">Entrenar</button>` : ''}
+    `
+    diasContainerEl.appendChild(card)
   }
+}
 
-  // Llamamos a la Netlify Function (sin key)
-  const functionResp = await fetch('/.netlify/functions/generarRutina', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ user_id: user.id })
-  })
+// ---------- ENTRENAR ----------
+async function entrenar (diaId) {
+  window.location.href = '/rutina.html?dia=' + diaId
+}
 
-  const json = await functionResp.json()
-  if (!functionResp.ok) {
-    cont.textContent = 'Error: ' + (json?.error || 'No se pudo generar la rutina.')
-    return
+// ---------- HELPERS ----------
+function getWeek (date) {
+  const target = new Date(date.valueOf())
+  const dayNr  = (date.getDay() + 6) % 7
+  target.setDate(target.getDate() - dayNr + 3)
+  const firstThursday = target.valueOf()
+  target.setMonth(0, 1)
+  if (target.getDay() !== 4) {
+    target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7)
   }
-  const rutinaText = json.rutina
-  cont.textContent = rutinaText
-
-  // Guardar rutina
-  document.getElementById('btn-guardar-rutina').onclick = async () => {
-    await supabase.from('rutinas').upsert({
-      id: user.id,
-      contenido: rutinaText,
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'id' })
-
-    alert('Rutina guardada.')
-  }
+  return 1 + Math.ceil((firstThursday - target) / 604800000)
 }

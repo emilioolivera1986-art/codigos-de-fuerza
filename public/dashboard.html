@@ -4,11 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard - Códigos de Fuerza</title>
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-
   <style>
     :root {
       --fondo: #0f172a;
@@ -17,51 +15,63 @@
       --blanco: #ffffff;
       --gris-claro: rgba(255, 255, 255, .85);
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: "Bebas Neue", sans-serif;
       background: var(--fondo);
       color: var(--blanco);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
       padding: 2rem;
     }
-
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
     .logo {
-      width: 100px;
-      margin-bottom: 1.5rem;
+      width: 70px;
     }
-
-    h1 {
-      font-size: 2.5rem;
-      letter-spacing: 1px;
+    .top-bar button {
+      background: transparent;
+      color: var(--amarillo-solido);
+      border: 1px solid var(--amarillo-solido);
+      padding: .4rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      max-width: 1200px;
+      margin: auto;
+    }
+    .card {
+      background: rgba(0, 0, 0, .55);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--amarillo);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .card h2 {
+      font-size: 1.5rem;
       margin-bottom: 1rem;
+      letter-spacing: 1px;
     }
-
     .badge {
       display: inline-block;
-      margin: 0.5rem 0;
-      padding: 0.3rem 0.8rem;
+      margin: .3rem 0;
+      padding: .3rem .8rem;
       background: var(--amarillo);
       color: var(--fondo);
       border-radius: 20px;
-      font-size: 1rem;
+      font-size: .9rem;
     }
-
     .btn {
-      margin-top: 2rem;
-      padding: .75rem 2rem;
-      font-size: 1.2rem;
+      margin-top: 1rem;
+      padding: .6rem 1.4rem;
+      font-size: 1rem;
       font-family: "Bebas Neue", sans-serif;
       letter-spacing: 1px;
       background: var(--amarillo-solido);
@@ -69,60 +79,71 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
       transition: background .2s;
     }
-
-    .btn:hover {
-      background: #ffd93d;
+    .btn:hover { background: #ffd93d; }
+    .btn-block { width: 100%; }
+    .imc-box {
+      font-size: 3rem;
+      line-height: 1;
     }
-
-    #salir {
-      margin-top: 1rem;
-      background: transparent;
-      color: var(--amarillo-solido);
-      border: 1px solid var(--amarillo-solido);
+    .imc-label {
+      font-size: 1rem;
+      margin-top: .5rem;
+      color: var(--gris-claro);
     }
-
-    #salir:hover {
-      background: var(--amarillo-solido);
-      color: var(--fondo);
+    .dias-scroll {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      padding-bottom: .5rem;
     }
-
-    #solapa-rutina {
-      margin-top: 2rem;
-      text-align: left;
-      max-width: 600px;
-    }
-
-    #rutina-contenido {
-      white-space: pre-wrap;
-      background: rgba(0,0,0,.5);
-      padding: 1rem;
+    .dia-card {
+      flex: 0 0 200px;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid var(--amarillo);
       border-radius: 8px;
-      margin-top: 1rem;
+      padding: 1rem;
+      text-align: center;
     }
+    .dia-card.done { border-color: #22c55e; }
+    .dia-card.future { opacity: .5; }
+    .dia-title { font-size: 1.1rem; margin-bottom: .5rem; }
+    .dia-fecha { font-size: .8rem; color: var(--gris-claro); }
+    .check { font-size: 1.5rem; margin: .5rem 0; }
   </style>
 </head>
 <body>
-  <img src="/assets/logo-cf.jpg" alt="Logo CF" class="logo" />
-  <h1 id="welcome">¡Bienvenido a tus códigos de fuerza!</h1>
+  <div class="top-bar">
+    <img src="/assets/logo-cf.jpg" alt="Logo" class="logo">
+    <button id="salir">Cerrar sesión</button>
+  </div>
 
-  <p id="user-email"></p>
-  <p id="dias-registro" class="badge"></p>
-  <p id="verif-status"></p>
+  <div class="grid">
+    <!-- Bienvenida -->
+    <div class="card">
+      <h2 id="welcome">Hola</h2>
+      <p id="user-email"></p>
+      <p id="dias-registro" class="badge"></p>
+      <p id="verif-status"></p>
+      <button id="btn-rutina" class="btn btn-block">Crear mi rutina</button>
+      <button id="btn-ver-rutina" class="btn btn-block" style="display:none;">Ver rutina completa</button>
+    </div>
 
-  <a href="#" class="btn" id="btn-rutina">Empezar rutina</a>
-  <button id="btn-ver-rutina" class="btn">Ver mi rutina</button>
+    <!-- IMC -->
+    <div class="card">
+      <h2>Mi IMC</h2>
+      <div class="imc-box" id="imc-valor">--</div>
+      <div class="imc-label" id="imc-etiqueta"></div>
+    </div>
 
-  <section id="solapa-rutina" style="display:none;">
-    <h2>Mi rutina personalizada</h2>
-    <div id="rutina-contenido">Cargando rutina...</div>
-    <button id="btn-guardar-rutina" class="btn">Guardar rutina</button>
-  </section>
-
-  <button id="salir">Cerrar sesión</button>
+    <!-- Mi semana -->
+    <div class="card" style="grid-column: 1 / -1;">
+      <h2>Mi semana</h2>
+      <div id="semana-vacia" style="color:var(--gris-claro);">Aún no tenés días cargados.</div>
+      <div class="dias-scroll" id="dias-container"></div>
+    </div>
+  </div>
 
   <script type="module" src="/assets/dashboard.js"></script>
 </body>
