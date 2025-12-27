@@ -31,12 +31,15 @@ form.addEventListener('submit', async (e) => {
   const equipo = document.getElementById('equipo').value
   const tiempo = parseInt(document.getElementById('tiempo').value, 10)
 
-  // Validaciones básicas rápidas
+  // validaciones
   if (!nombre) { mensaje.textContent = 'Ingresá tu nombre.'; return }
   if (!Number.isFinite(edad) || edad < 10 || edad > 99) { mensaje.textContent = 'Edad inválida.'; return }
   if (!Number.isFinite(altura) || altura < 120 || altura > 230) { mensaje.textContent = 'Altura inválida.'; return }
   if (!Number.isFinite(peso) || peso < 30 || peso > 250) { mensaje.textContent = 'Peso inválido.'; return }
   if (!objetivo || !nivel || !dias || !equipo || !tiempo) { mensaje.textContent = 'Completá todos los campos.'; return }
+
+  // IMC
+  const imc = (peso / Math.pow(altura / 100, 2)).toFixed(1)
 
   const perfil = {
     id: user.id,
@@ -44,6 +47,7 @@ form.addEventListener('submit', async (e) => {
     edad,
     altura,
     peso,
+    imc,
     objetivo,
     nivel,
     dias,
